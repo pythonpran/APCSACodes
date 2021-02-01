@@ -17,8 +17,8 @@ public class UberDriver {
         this.costPerMile = costPerMile;
         this.seats = seats;
         this.tankCapacity = tankCapacity;
-        this.gasLevel  = gasLevel;
-        if(gasLevel > tankCapacity)
+        this.gasLevel = gasLevel;
+        if (gasLevel > tankCapacity)
             this.gasLevel = tankCapacity;
         this.name = name;
         this.milesPerGallon = milesPerGallon;
@@ -27,62 +27,49 @@ public class UberDriver {
 
     }
 
-    public UberDriver(String name, int balance, double gasLevel){
+    public UberDriver(String name, int balance, double gasLevel) {
 
     }
 
-    public double getGas(int distanceFromGasStop){
-        double difference = gasLevel - tankCapacity - distanceFromGasStop * milesPerGallon;
-        if(difference < 0){
+    public double getGas(int distanceFromGasStop) {
+        gasLevel = gasLevel - distanceFromGasStop / milesPerGallon;
+        if (gasLevel < 0) {
             System.out.println("Not enough gas to reach gas station, find gas station with different distance");
             return -1;
         }
-        balance -= costPerGallon * difference;
+        balance -= costPerGallon * (tankCapacity - gasLevel);
         gasLevel = tankCapacity;
         return gasLevel;
     }
 
-    public void pickUp(int distanceFromDestination,int numberPicked){
-        if(numberPicked < 0 ){
-            System.out.println("Invalid amount of passengers");
-
-        }if(passengerNum + numberPicked > seats){
-            System.out.println("Not enough space to fit all passengers");
-            passengerNum = seats;
-        }else{
-            passengerNum += numberPicked;
-        }
-
-        gasLevel -= distanceFromDestination / milesPerGallon;
-        balance += costPerMile * distanceFromDestination;
+    public void pickUp(int distanceFromDestination, int numberPicked) {
+        traveling(distanceFromDestination,numberPicked);
     }
 
-    public void dropOff(int distanceFromDestination, int numberDropped){
-        if(numberDropped < 0 ){
+    public void dropOff(int distanceFromDestination, int numberDropped) {
+        traveling(distanceFromDestination, numberDropped);
+    }
+
+    private void traveling(int distanceFromDestination, int numberDropped) {
+        if (numberDropped < 0) {
             System.out.println("Invalid amount of passengers");
 
-        }if(passengerNum + numberDropped > seats){
+        }else if(passengerNum + numberDropped > seats) {
             System.out.println("Not enough space to fit all passengers");
             passengerNum = seats;
-        }else{
+            gasLevel -= 1.0 * distanceFromDestination / milesPerGallon;
+            balance += costPerMile * distanceFromDestination;
+        } else {
             passengerNum += numberDropped;
+            gasLevel -= 1.0 * distanceFromDestination / milesPerGallon;
+            balance += costPerMile * distanceFromDestination;
         }
-
-        gasLevel -= distanceFromDestination / milesPerGallon;
-        balance += costPerMile * distanceFromDestination;
-
     }
 
-    private void traveling(int distanceFromDestination, int amount){
-
+    public String toString() {
+        return String.format("Pay Rate: %.2f\nCurrent Passenger Number: %d\nVehicle Seats: %d\nTank Capacity: %.5f\nGas Level: %.2f\nName: %s\nBalance: %.2f"
+                , costPerMile, passengerNum, seats, tankCapacity, gasLevel, name, balance);
     }
-
-    public String toString(){
-        return String.format("Pay Rate: %d\nPassenger Number: %d",costPerMile,passengerNum);
-    }
-
-
-
 
 
 }
